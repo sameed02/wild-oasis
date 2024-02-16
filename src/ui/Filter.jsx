@@ -38,6 +38,7 @@ const FilterButton = styled.button`
 function Filter({ filterField, options }) {
   const [searchParams, setSearchParams] = useSearchParams();
   function handleClick(value) {
+    searchParams.set("page", 1); // everytime there is change of status page is reset to 1
     searchParams.set(filterField, value);
     setSearchParams(searchParams);
   }
