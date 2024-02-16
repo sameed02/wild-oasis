@@ -4,7 +4,7 @@ import supabase from "./supabase";
 export async function getBookings({ filter, sortBy }) {
   let query = supabase
     .from("bookings")
-    .select("*,cabins(name),guests(fullName,email)", { count: "exact" });
+    .select("*,cabins(name),guests(fullName,email)");
 
   if (filter !== null) {
     query = query[filter.method || "eq"](filter.field, filter.value);
