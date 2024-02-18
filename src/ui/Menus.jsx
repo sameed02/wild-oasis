@@ -81,7 +81,7 @@ function Menus({ children }) {
   );
 }
 
-function Toggle({ CabinId }) {
+function Toggle({ id }) {
   const { openId, close, open, setPosition } = useContext(MenusContext);
 
   function handleClick(e) {
@@ -91,7 +91,7 @@ function Toggle({ CabinId }) {
       y: rect.y + rect.height + 8,
     });
     e.stopPropagation();
-    openId === "" || openId !== CabinId ? open(CabinId) : close();
+    openId === "" || openId !== id ? open(id) : close();
   }
 
   return (
@@ -101,12 +101,12 @@ function Toggle({ CabinId }) {
   );
 }
 
-function List({ CabinId, children }) {
+function List({ id, children }) {
   const { openId, position, close } = useContext(MenusContext);
 
   const { ref } = useOutsideClick(close);
 
-  if (openId !== CabinId) return null;
+  if (openId !== id) return null;
   return createPortal(
     <StyledList ref={ref} $position={position}>
       {children}
