@@ -17,6 +17,7 @@ import AppLayout from "./ui/AppLayout.jsx";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "react-hot-toast";
 import Booking from "./pages/Booking.jsx";
+import CheckIn from "./pages/CheckIn.jsx";
 
 const router = createBrowserRouter([
   {
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
       {
         path: "/booking/:bookingId",
         element: <Booking />,
+      },
+      {
+        path: "/checkIn/:bookingId",
+        element: <CheckIn />,
       },
       {
         path: "/cabins",

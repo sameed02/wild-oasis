@@ -8,6 +8,12 @@ import Button from "../../ui/Button";
 import ButtonText from "../../ui/ButtonText";
 
 import { useMoveBack } from "../../hooks/useMoveBack";
+import { useFetchBooking } from "../bookings/useFetchBooking.js";
+import Spinner from "../../ui/Spinner.jsx";
+import { useEffect, useState } from "react";
+import Checkbox from "../../ui/Checkbox.jsx";
+import { formatCurrency } from "../../utils/helpers.js";
+import { useCheckIn } from "../bookings/useCheckIn.js";
 
 const Box = styled.div`
   /* Box */
@@ -18,9 +24,17 @@ const Box = styled.div`
 `;
 
 function CheckinBooking() {
+  const [confirmPaid, setConfirmPaid] = useState(false);
+  const { data: booking = [], isLoading } = useFetchBooking();
   const moveBack = useMoveBack();
 
-  const booking = {};
+  useEffect(() => {
+    setConfirmPaid(booking?.isPaid ?? false);
+  }, [booking?.isPaid]);
+
+  const { mutateCheckIn, isCheckingIn } = useCheckIn();
+
+  if (isLoading) return <Spinner />;
 
   const {
     id: bookingId,
@@ -31,20 +45,34 @@ function CheckinBooking() {
     numNights,
   } = booking;
 
-  function handleCheckin() {}
-
+  function handleCheckin() {
+    if (!confirmPaid) return;
+    mutateCheckIn(bookingId);
+  }
   return (
     <>
-      <Row type="horizontal">
+      <Row $type="horizontal">
         <Heading as="h1">Check in booking #{bookingId}</Heading>
         <ButtonText onClick={moveBack}>&larr; Back</ButtonText>
       </Row>
 
       <BookingDataBox booking={booking} />
-
+      <Box>
+        <Checkbox
+          checked={confirmPaid}
+          onChange={() => setConfirmPaid(!confirmPaid)}
+          id="confirm"
+          disabled={confirmPaid || isCheckingIn}
+        >
+          I confirm that {guests.fullName} has paid total amount of{" "}
+          {formatCurrency(totalPrice)}
+        </Checkbox>
+      </Box>
       <ButtonGroup>
-        <Button onClick={handleCheckin}>Check in booking #{bookingId}</Button>
-        <Button variation="secondary" onClick={moveBack}>
+        <Button onClick={handleCheckin} disabled={!confirmPaid || isCheckingIn}>
+          Check in booking #{bookingId}
+        </Button>
+        <Button $variation="secondary" onClick={moveBack}>
           Back
         </Button>
       </ButtonGroup>
