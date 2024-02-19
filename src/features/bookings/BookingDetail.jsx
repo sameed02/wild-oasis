@@ -11,8 +11,6 @@ import ButtonText from "../../ui/ButtonText";
 import { useMoveBack } from "../../hooks/useMoveBack";
 import { useFetchBooking } from "./useFetchBooking.js";
 import Spinner from "../../ui/Spinner.jsx";
-import Menus from "../../ui/Menus.jsx";
-import { HiArrowDownOnSquare } from "react-icons/hi2";
 import { useNavigate } from "react-router";
 
 const HeadingGroup = styled.div`
