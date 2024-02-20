@@ -7,9 +7,18 @@ import Table from "../../ui/Table";
 import { formatCurrency } from "../../utils/helpers";
 import { formatDistanceFromNow } from "../../utils/helpers";
 import Menus from "../../ui/Menus.jsx";
-import { HiArrowDownOnSquare, HiArrowUpOnSquare, HiEye } from "react-icons/hi2";
+import {
+  HiArrowDownOnSquare,
+  HiArrowUpOnSquare,
+  HiEye,
+  HiTrash,
+} from "react-icons/hi2";
 import { useNavigate } from "react-router";
 import { useCheckOut } from "./useCheckOut.js";
+import Modal from "../../ui/Modal.jsx";
+import ConfirmDelete from "../../ui/ConfirmDelete.jsx";
+import { useDeleteBooking } from "./useDeleteBooking.js";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Cabin = styled.div`
   font-size: 1.6rem;
@@ -52,13 +61,15 @@ function BookingRow({
     cabins: { name: cabinName },
   },
 }) {
-  const navigate = useNavigate();
   const statusToTagName = {
     unconfirmed: "blue",
     "checked-in": "green",
     "checked-out": "silver",
   };
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { mutateCheckOut, isCheckingOut } = useCheckOut();
+  const { mutateDeleteBooking, isDeleting } = useDeleteBooking();
   return (
     <Table.Row>
       <Cabin>{cabinName}</Cabin>
@@ -82,36 +93,56 @@ function BookingRow({
       <Amount>{formatCurrency(totalPrice)}</Amount>
 
       {/* buttons */}
-      <Menus.Menu>
-        <Menus.Toggle id={bookingId}></Menus.Toggle>
-        <Menus.List id={bookingId}>
-          <Menus.Button
-            icon={<HiEye />}
-            onClick={() => navigate(`/booking/${bookingId}`)}
-          >
-            See details
-          </Menus.Button>
-
-          {status === "unconfirmed" && (
+      <Modal>
+        <Menus.Menu>
+          <Menus.Toggle id={bookingId}></Menus.Toggle>
+          <Menus.List id={bookingId}>
             <Menus.Button
-              icon={<HiArrowDownOnSquare />}
-              onClick={() => navigate(`/checkIn/${bookingId}`)}
+              icon={<HiEye />}
+              onClick={() => navigate(`/booking/${bookingId}`)}
             >
-              Check in
+              See details
             </Menus.Button>
-          )}
 
-          {status === "checked-in" && (
-            <Menus.Button
-              icon={<HiArrowUpOnSquare />}
-              onClick={() => mutateCheckOut(bookingId)}
-              disabled={isCheckingOut}
-            >
-              Check out
-            </Menus.Button>
-          )}
-        </Menus.List>
-      </Menus.Menu>
+            {status === "unconfirmed" && (
+              <Menus.Button
+                icon={<HiArrowDownOnSquare />}
+                onClick={() => navigate(`/checkIn/${bookingId}`)}
+              >
+                Check in
+              </Menus.Button>
+            )}
+
+            {status === "checked-in" && (
+              <Menus.Button
+                icon={<HiArrowUpOnSquare />}
+                onClick={() => mutateCheckOut(bookingId)}
+                disabled={isCheckingOut}
+              >
+                Check out
+              </Menus.Button>
+            )}
+            <Modal.Open opens="delete-modal">
+              <div>
+                <Menus.Button icon={<HiTrash />}>Delete</Menus.Button>
+              </div>
+            </Modal.Open>
+          </Menus.List>
+
+          <Modal.Window name="delete-modal">
+            <ConfirmDelete
+              resourceName="booking"
+              disabled={isDeleting}
+              onConfirm={() =>
+                mutateDeleteBooking(bookingId, {
+                  onSuccess: () =>
+                    queryClient.invalidateQueries({ active: true }),
+                })
+              }
+            />
+          </Modal.Window>
+        </Menus.Menu>
+      </Modal>
     </Table.Row>
   );
 }

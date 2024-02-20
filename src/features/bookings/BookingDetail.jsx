@@ -14,6 +14,9 @@ import Spinner from "../../ui/Spinner.jsx";
 import { useNavigate } from "react-router";
 import { HiArrowUpOnSquare } from "react-icons/hi2";
 import { useCheckOut } from "./useCheckOut.js";
+import Modal from "../../ui/Modal.jsx";
+import ConfirmDelete from "../../ui/ConfirmDelete.jsx";
+import { useDeleteBooking } from "./useDeleteBooking.js";
 
 const HeadingGroup = styled.div`
   display: flex;
@@ -24,6 +27,7 @@ const HeadingGroup = styled.div`
 function BookingDetail() {
   const { data: booking = [], isLoading } = useFetchBooking();
   const { mutateCheckOut, isCheckingOut } = useCheckOut();
+  const { mutateDeleteBooking, isDeleting } = useDeleteBooking();
   const moveBack = useMoveBack();
   const navigate = useNavigate();
 
@@ -48,28 +52,47 @@ function BookingDetail() {
       </Row>
 
       <BookingDataBox booking={booking} />
+      <Modal>
+        <ButtonGroup>
+          {status === "unconfirmed" && (
+            <Button onClick={() => navigate(`/checkIn/${bookingId}`)}>
+              Check in
+            </Button>
+          )}
 
-      <ButtonGroup>
-        {status === "unconfirmed" && (
-          <Button onClick={() => navigate(`/checkIn/${bookingId}`)}>
-            Check in
+          {status === "checked-in" && (
+            <Button
+              $icon={<HiArrowUpOnSquare />}
+              onClick={() => mutateCheckOut(bookingId)}
+              disabled={isCheckingOut}
+            >
+              Check out
+            </Button>
+          )}
+
+          <Modal.Open opens="delete-modal">
+            <div>
+              <Button $variation="danger">Delete booking</Button>
+            </div>
+          </Modal.Open>
+
+          <Modal.Window name="delete-modal">
+            <ConfirmDelete
+              resourceName="booking"
+              disabled={isDeleting}
+              onConfirm={() =>
+                mutateDeleteBooking(bookingId, {
+                  onSettled: () => navigate(-1),
+                })
+              }
+            />
+          </Modal.Window>
+
+          <Button $variation="secondary" onClick={moveBack}>
+            Back
           </Button>
-        )}
-
-        {status === "checked-in" && (
-          <Button
-            $icon={<HiArrowUpOnSquare />}
-            onClick={() => mutateCheckOut(bookingId)}
-            disabled={isCheckingOut}
-          >
-            Check out
-          </Button>
-        )}
-
-        <Button $variation="secondary" onClick={moveBack}>
-          Back
-        </Button>
-      </ButtonGroup>
+        </ButtonGroup>
+      </Modal>
     </>
   );
 }
