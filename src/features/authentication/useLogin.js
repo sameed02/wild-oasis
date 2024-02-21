@@ -10,7 +10,7 @@ export function useLogin() {
     mutationFn: ({ email, password }) => login({ email, password }),
     onSuccess: (user) => {
       queryClient.setQueryData(["user"], user);
-      navigate("/dashboard");
+      navigate("/dashboard", { replace: true });
     },
     onError: (err) => {
       toast.error(`${err.message}`);
