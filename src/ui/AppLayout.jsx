@@ -1,5 +1,4 @@
 import { Outlet } from "react-router";
-import GlobalStyles from "../styles/GlobalStyles.js";
 import Sidebar from "./Sidebar.jsx";
 import Header from "./Header.jsx";
 import styled from "styled-components";
@@ -27,18 +26,15 @@ const Container = styled.div`
 
 function AppLayout() {
   return (
-    <>
-      <GlobalStyles />
-      <StyledAppLayout>
-        <Header />
-        <Sidebar />
-        <Main>
-          <Container>
-            <Outlet />
-          </Container>
-        </Main>
-      </StyledAppLayout>
-    </>
+    <StyledAppLayout>
+      <Header />
+      <Sidebar />
+      <Main>
+        <Container>
+          <Outlet />
+        </Container>
+      </Main>
+    </StyledAppLayout>
   );
 }
 

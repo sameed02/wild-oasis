@@ -9,6 +9,24 @@ export async function login({ email, password }) {
   if (error) {
     throw new Error(error.message);
   }
-  console.log(data);
   return data;
+}
+
+export async function getCurrentUser() {
+  // fetching userSession
+  const { data: userSession } = await supabase.auth.getSession();
+
+  // return null if there is no session
+  if (!userSession.session) return null;
+
+  // fetch curren user if there is userSession
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+  return user;
 }
