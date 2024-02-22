@@ -22,7 +22,6 @@ const Avatar = styled.img`
 `;
 function UserAvatar() {
   const { currentUser } = useFetchUser();
-  console.log(currentUser.user_metadata);
   const { avatar, fullName } = currentUser.user_metadata;
 
   return (
