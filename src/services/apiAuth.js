@@ -1,5 +1,37 @@
 import supabase from "./supabase.js";
 
+export async function signUp({ fullName, email, password }) {
+  let { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        fullName,
+        avatar: "",
+      },
+    },
+  });
+
+  let authError = null;
+
+  // User exists, but is fake. See https://supabase.com/docs/reference/javascript/auth-signup
+  if (data?.user && !data.user?.identities.length) {
+    authError = {
+      name: "AuthApiError",
+      message: "This email has already been registered",
+    };
+  } else if (error) {
+    authError = {
+      name: error.name,
+      message: error.message,
+    };
+  }
+
+  if (authError) throw new Error(authError.message);
+
+  return data;
+}
+
 export async function login({ email, password }) {
   let { data, error } = await supabase.auth.signInWithPassword({
     email,
