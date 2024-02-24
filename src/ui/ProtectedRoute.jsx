@@ -26,7 +26,6 @@ function ProtectedRoute({ children }) {
 
   // 2. while loading, display spinner
   if (isLoading) {
-    console.log(isLoading);
     return (
       <FullPage>
         <Spinner />

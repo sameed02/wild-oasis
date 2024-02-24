@@ -20,6 +20,7 @@ import Booking from "./pages/Booking.jsx";
 import CheckIn from "./pages/CheckIn.jsx";
 import ProtectedRoute from "./ui/ProtectedRoute.jsx";
 import GlobalStyles from "./styles/GlobalStyles.js";
+import { DarkModeProdiver } from "./Context/DarkModeContext.jsx";
 
 const router = createBrowserRouter([
   {
@@ -103,17 +104,19 @@ const toastOptions = {
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <GlobalStyles />
-      <RouterProvider router={router} />;
-      <ReactQueryDevtools initialIsOpen={false} />
-      <Toaster
-        position="top-center"
-        gutter={12}
-        containerStyle={{ margin: "8px" }}
-        toastOptions={toastOptions}
-      />
-    </QueryClientProvider>
+    <DarkModeProdiver>
+      <QueryClientProvider client={queryClient}>
+        <GlobalStyles />
+        <RouterProvider router={router} />;
+        <ReactQueryDevtools initialIsOpen={false} />
+        <Toaster
+          position="top-center"
+          gutter={12}
+          containerStyle={{ margin: "8px" }}
+          toastOptions={toastOptions}
+        />
+      </QueryClientProvider>
+    </DarkModeProdiver>
   );
 }
 export default App;
