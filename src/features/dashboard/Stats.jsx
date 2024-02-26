@@ -16,7 +16,11 @@ import { formatCurrency } from "../../utils/helpers.js";
 function Stats({ bookings, confirmedStays, cabinCount, numDays }) {
   const numBookings = bookings.length;
   const sales = bookings.reduce((acc, curr) => acc + curr.totalPrice, 0);
-  const checkIns = confirmedStays.length;
+
+  const checkIns = confirmedStays.filter(
+    (stay) => stay.status === "checked-in"
+  ).length;
+
   const occupation =
     confirmedStays.reduce((acc, curr) => acc + curr.numNights, 0) /
     (numDays * cabinCount);
