@@ -1,4 +1,10 @@
 import styled from "styled-components";
+import Tag from "../../ui/Tag.jsx";
+import { Flag } from "../../ui/Flag.jsx";
+import Button from "../../ui/Button.jsx";
+import { HiArrowDownOnSquare, HiArrowUpOnSquare } from "react-icons/hi2";
+import { useNavigate } from "react-router";
+import { useCheckOut } from "../bookings/useCheckOut.js";
 
 const StyledTodayItem = styled.li`
   display: grid;
@@ -18,3 +24,40 @@ const StyledTodayItem = styled.li`
 const Guest = styled.div`
   font-weight: 500;
 `;
+
+function TodayItem({ activity }) {
+  const navigate = useNavigate();
+  const { mutateCheckOut, isCheckingOut } = useCheckOut();
+  const { id: bookingId, status, numNights, guests } = activity;
+  return (
+    <StyledTodayItem>
+      {status === "unconfirmed" && <Tag type="green">Arriving</Tag>}
+      {status === "checked-in" && <Tag type="blue">Departing</Tag>}
+
+      <Flag src={guests.countryFlag} alt={`Flag of ${guests.country}`} />
+      <Guest>{guests.fullName}</Guest>
+      <div>{numNights} nights</div>
+      {status === "unconfirmed" && (
+        <Button
+          $size="small"
+          $icon={<HiArrowDownOnSquare />}
+          onClick={() => navigate(`/checkIn/${bookingId}`)}
+        >
+          Check in
+        </Button>
+      )}
+      {status === "checked-in" && (
+        <Button
+          $size="small"
+          $icon={<HiArrowUpOnSquare />}
+          onClick={() => mutateCheckOut(bookingId)}
+          disabled={isCheckingOut}
+        >
+          Check out
+        </Button>
+      )}
+    </StyledTodayItem>
+  );
+}
+
+export default TodayItem;
