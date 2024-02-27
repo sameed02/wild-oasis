@@ -21,13 +21,20 @@ import CheckIn from "./pages/CheckIn.jsx";
 import ProtectedRoute from "./ui/ProtectedRoute.jsx";
 import GlobalStyles from "./styles/GlobalStyles.js";
 import { DarkModeProdiver } from "./Context/DarkModeContext.jsx";
+import { ErrorBoundary } from "react-error-boundary";
+import ErrorFallback from "./ui/ErrorFallback.jsx";
 
 const router = createBrowserRouter([
   {
     element: (
-      <ProtectedRoute>
-        <AppLayout />
-      </ProtectedRoute>
+      <ErrorBoundary
+        FallbackComponent={ErrorFallback}
+        onReset={() => window.location.replace("/")}
+      >
+        <ProtectedRoute>
+          <AppLayout />
+        </ProtectedRoute>
+      </ErrorBoundary>
     ),
     children: [
       {
